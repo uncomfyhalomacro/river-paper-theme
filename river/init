@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# This is the example configuration file for river.
+#
+# If you wish to edit this, you will probably want to copy it to
+# $XDG_CONFIG_HOME/river/init or $HOME/.config/river/init first.
+#
+# See the river(1), riverctl(1), and rivertile(1) man pages for complete
+# documentation.
+# Setting some startup stuff
+
+###########
+# Interop #
+#'#########
+gsettings set org.gnome.desktop.default-applications.terminal exec foot.desktop
+riverctl spawn "dbus-update-activation-environment SEATD_SOCK DISPLAY WAYLAND_DISPLAY DESKTOP_SESSION=river XDG_CURRENT_DESKTOP=river"
+riverctl spawn "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=river"
+
+###########################
+# SCREENCASTING AND SOUND #
+###########################
+#riverctl spawn "exec /usr/libexec/xdg-desktop-portal-wlr -r"
+#riverctl spawn "exec /usr/libexec/xdg-desktop-portal -r"
+
+##########
+# RELOAD #
+##########
+# Binding to reload the configuration (good for edits on bindings or adding new stuff
+riverctl map normal "Mod4" R spawn $HOME/.config/river/init
+
+###################
+# Startup Widgets #
+###################
+riverctl spawn "river-tag-overlay --square-size 30 --background-colour 0xeeeeeeff --border-colour 0x000000 --square-active-occupied-colour 0x444444ff --square-active-background-colour 0xfcdbffff --square-active-border-colour 0x81a1c1 --tag-amount 11 --anchors 0:0:0:0 --square-padding 3"
+riverctl spawn $HOME/.config/river/wlsunset.sh
+riverctl spawn $HOME/.config/mako/mako.sh
+riverctl spawn $HOME/.config/river/swaybg.sh
+riverctl spawn $HOME/.config/river/bindings.sh
+riverctl spawn $HOME/.config/yambar/yambar.sh
+
+riverctl spawn "pkill wl-paste; sleep 2s; \
+    wl-paste -t text --watch clipman store & disown"
+
+# LOCK ME UP (kinky)
+riverctl spawn $HOME/.config/river/lock.sh
+
+#####################
+# Themes and Colors #
+#####################
+# Borders
+riverctl border-color-unfocused 0x608A78ff
+riverctl border-color-focused 0xEFB8CCff
+riverctl border-width 2
+riverctl background-color 0x1d2021
+
+gnome_schema="org.gnome.desktop.interface"
+gsettings set "$gnome_schema" gtk-theme "Adwaita"
+gsettings set "$gnome_schema" icon-theme "Papirus"
+gsettings set "$gnome_schema" cursor-theme "Adwaita"
+gsettings set "$gnome_schema" font-name "Hack Nerd Font 12"
+
